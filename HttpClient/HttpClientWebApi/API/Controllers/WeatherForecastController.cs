@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace API.Controllers
 {
@@ -20,10 +21,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<WeatherForecast> Get([FromHeader] int weatherAmount = 5)  
         {
+            //One Way to getting header from requst
+            //var wetherAmount2 = int.Parse(HttpContent.Request.Header["weatherAmount"].ToString());
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return Enumerable.Range(1, weatherAmount).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),

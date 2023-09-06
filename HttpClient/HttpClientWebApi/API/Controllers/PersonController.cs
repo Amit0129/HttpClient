@@ -42,6 +42,30 @@ namespace API.Controllers
 
                 throw;
             }
-        } 
+        }
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateAPersonInfo(int id,Person person)
+        {
+            try
+            {
+                var personInfo = dB_Context.PersonInfo.FirstOrDefault(x => x.Id == id);
+                if (personInfo == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    personInfo.Name = person.Name;
+                    dB_Context.PersonInfo.Update(personInfo);
+                    dB_Context.SaveChanges();
+                    return NoContent();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

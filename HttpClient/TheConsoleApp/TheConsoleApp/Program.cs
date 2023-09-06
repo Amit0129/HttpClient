@@ -11,6 +11,7 @@ namespace TheConsoleApp
         static async Task Main(string[] args)
         {
             string url = "https://localhost:7177/api/people";
+            string uriWeather = "https://localhost:7177/WeatherForecast";
             var jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             bool check = true;
             while (check)
@@ -18,7 +19,8 @@ namespace TheConsoleApp
                 Console.WriteLine("Write 1 for Get Method");
                 Console.WriteLine("Write 2 for Post Method Using PostAsJsonAsync");
                 Console.WriteLine("Write 3 for Post Method Using PostAsync");
-
+                Console.WriteLine("Write 4 for Send Value In Header ");
+                Console.WriteLine("Write 5 for Put Method ");
                 int choice = Convert.ToInt32(Console.ReadLine());
                 switch (choice)
                 {
@@ -83,6 +85,37 @@ namespace TheConsoleApp
                             var newPersonSerialize = JsonSerializer.Serialize(newPerson);
                             var stringContent = new StringContent(newPersonSerialize, Encoding.UTF8, "application/json");//We can use xml instade of json for sending xml
                             var responce = await httpClient.PostAsync(url,stringContent);
+                        }
+                        break;
+                    case 4:
+                        using(var httpClient = new HttpClient())
+                        {
+                            using(var requestMessage = new HttpRequestMessage(HttpMethod.Get, uriWeather))
+                            {
+                                requestMessage.Headers.Add("weatherAmount", "10");
+                                var responce = await httpClient.SendAsync(requestMessage);
+                                var weatherForcasstInfo = JsonSerializer.Deserialize<List<WeatherForecast>>(
+                                    await responce.Content.ReadAsStringAsync(),jsonSerializerOptions);
+                                foreach (var weatherCast in weatherForcasstInfo)
+                                {
+                                    Console.WriteLine(weatherCast);
+                                }
+                                Console.WriteLine($"Amount of Weather data #1 : {weatherForcasstInfo.Count}");
+                            }
+
+                        }
+                        break;
+                    case 5:
+                        using(var httpClient = new HttpClient())
+                        {
+                            Console.WriteLine("Enter Person Id You want to update");
+                            int personId = Convert.ToInt32(Console.ReadLine());
+                            var person = new Person()
+                            {
+                                Name = "Pranav Wagmare"
+                            };
+                            await httpClient.PutAsJsonAsync($"{url}/{personId}", person);
+                            var people = await httpClient.GetFromJsonAsync<List<Person>>(url);
                         }
                         break;
                     default:
