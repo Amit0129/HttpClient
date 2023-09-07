@@ -67,5 +67,25 @@ namespace API.Controllers
                 throw;
             }
         }
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var personInfo = dB_Context.PersonInfo.FirstOrDefault(x => x.Id == id);
+                if (personInfo == null)
+                {
+                    return NotFound();
+                }
+                dB_Context.PersonInfo.Remove(personInfo);
+                dB_Context.SaveChanges();
+                return NoContent();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

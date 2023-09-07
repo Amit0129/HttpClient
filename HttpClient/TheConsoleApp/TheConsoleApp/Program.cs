@@ -21,6 +21,7 @@ namespace TheConsoleApp
                 Console.WriteLine("Write 3 for Post Method Using PostAsync");
                 Console.WriteLine("Write 4 for Send Value In Header ");
                 Console.WriteLine("Write 5 for Put Method ");
+                Console.WriteLine("Write 6 for Delete Method ");
                 int choice = Convert.ToInt32(Console.ReadLine());
                 switch (choice)
                 {
@@ -51,7 +52,7 @@ namespace TheConsoleApp
                                 //Name = name
                             };
                             var response = await httpClient.PostAsJsonAsync(url, newPerson);//It serialize the parameter and isssu Http POST.
-                            if (response.StatusCode  == System.Net.HttpStatusCode.BadRequest)//{For null Name Error} It Will Show the Name Is is required Http Status Code Error. 
+                            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)//{For null Name Error} It Will Show the Name Is is required Http Status Code Error. 
                             {
                                 var person = await response.Content.ReadAsStringAsync();
                                 var errorFromWebApi = Utils.ExtractErrorFromWebApiResponce(person);
@@ -60,7 +61,7 @@ namespace TheConsoleApp
                                     Console.WriteLine($"{fieldWithError.Key}");
                                     foreach (var error in fieldWithError.Value)
                                     {
-                                        Console.WriteLine($"{ error}");
+                                        Console.WriteLine($"{error}");
                                     }
                                 }
                             }
@@ -84,18 +85,18 @@ namespace TheConsoleApp
                             };
                             var newPersonSerialize = JsonSerializer.Serialize(newPerson);
                             var stringContent = new StringContent(newPersonSerialize, Encoding.UTF8, "application/json");//We can use xml instade of json for sending xml
-                            var responce = await httpClient.PostAsync(url,stringContent);
+                            var responce = await httpClient.PostAsync(url, stringContent);
                         }
                         break;
                     case 4:
-                        using(var httpClient = new HttpClient())
+                        using (var httpClient = new HttpClient())
                         {
-                            using(var requestMessage = new HttpRequestMessage(HttpMethod.Get, uriWeather))
+                            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, uriWeather))
                             {
                                 requestMessage.Headers.Add("weatherAmount", "10");
                                 var responce = await httpClient.SendAsync(requestMessage);
                                 var weatherForcasstInfo = JsonSerializer.Deserialize<List<WeatherForecast>>(
-                                    await responce.Content.ReadAsStringAsync(),jsonSerializerOptions);
+                                    await responce.Content.ReadAsStringAsync(), jsonSerializerOptions);
                                 foreach (var weatherCast in weatherForcasstInfo)
                                 {
                                     Console.WriteLine(weatherCast);
@@ -106,7 +107,7 @@ namespace TheConsoleApp
                         }
                         break;
                     case 5:
-                        using(var httpClient = new HttpClient())
+                        using (var httpClient = new HttpClient())
                         {
                             Console.WriteLine("Enter Person Id You want to update");
                             int personId = Convert.ToInt32(Console.ReadLine());
@@ -115,7 +116,15 @@ namespace TheConsoleApp
                                 Name = "Pranav Wagmare"
                             };
                             await httpClient.PutAsJsonAsync($"{url}/{personId}", person);
-                            var people = await httpClient.GetFromJsonAsync<List<Person>>(url);
+
+                        }
+                        break;
+                    case 6:
+                        using (var httpClient = new HttpClient())
+                        {
+                            Console.WriteLine("Enter The Person Id You Want to delete");
+                            int id = Convert.ToInt32(Console.ReadLine());
+                            await httpClient.DeleteAsync($"{url}/{id}");
                         }
                         break;
                     default:
